@@ -11,7 +11,7 @@ const withErrorHandler = (WrappedComponent, axios ) => {
         componentWillMount () {
             this.reqInterceptor = axios.interceptors.request.use(req => {
                 this.setState({ error: null });
-                return req; // We jave to return our req config so the req cld continue
+                return req; // We have to return our req config so the req cld continue
             })
             this.resInterceptor = axios.interceptors.response.use(res => res, error => { // also returning the response so it cn be used in the promise block and it can continue with the response
                 this.setState({ error: error });

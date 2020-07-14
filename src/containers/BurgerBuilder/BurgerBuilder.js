@@ -26,6 +26,7 @@ class BurgerBuilder extends Component {
     }
 
     componentDidMount () {
+        console.log(this.props)
         axios.get('https://burger-builder-f819b.firebaseio.com/ingredients.json')
             .then(response => {
                 console.log(response.data);
@@ -118,32 +119,20 @@ class BurgerBuilder extends Component {
     };
 
     purchaseContinueHandler = () => {
-        this.setState({ loading: true });
-        // alert('You continue to the next step!');
-        const orders = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice, // this should be recalculated in the server in a real application
-            customer: {
-                name: 'Victor Onofiok',
-                address: {
-                    street: 'Wall Street',
-                    zipCode: '019234',
-                    country: 'USA'
-                },
-                email: 'test@test.com'
-            },
-            deliveryMethod: 'fatest'
-        };
+        const queryParams = [];
 
-        // the syntax for sending a req to firebase is the name of the node with .json as its extension
-        axios.post('/order.json', orders)
-            .then(response => {
-                // console.log(response)
-                this.setState({ loading: false, purchasing: false });
-            }).catch(error => {
-                this.setState({ loading: false, purchasing: false });
-                console.log(error);
-            });
+        for (let key in this.state.ingredients) {
+            // encodeURIComponent is a method which simply encodes the elements such that they can be used in the URL
+            queryParams.push(encodeURIComponent(key) + '=' +  encodeURIComponent(this.state.ingredients[key]))
+        };
+        queryParams.push('price=' + this.state.totalPrice);
+        // example of what the array queryParams will look like ['salad=0', 'bacon=1', ...]
+        const queryString = queryParams.join('&');
+        this.props.history.push({
+            pathname: '/checkout',
+            search: '?' + queryString
+        });
+        
     };
 
     render () {
