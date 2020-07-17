@@ -7,11 +7,6 @@
     box-sizing: border-box;
 }
 
-.Input {
-    display: block;
-    margin: 10px auto;
-    height: 28px;
-}
 @media (min-width: 600px) {
     .ContatData {
         width: 500px;
