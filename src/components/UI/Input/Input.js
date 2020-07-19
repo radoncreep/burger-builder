@@ -4,11 +4,18 @@ import './Input.css';
 
 const input = (props) => {
     let inputElement = null;
+    const inputClasses = ["InputElement"];
+    let validationError = null;
+
+    if (props.invalid && props.shouldValidate && props.touched) {
+        inputClasses.push("Invalid");
+        validationError = <p>Please enter a valid value!</p>
+    };
 
     switch (props.elementType) { // checking what kind of element/tag it is, maybe input tag or textarea html tag
         case ('input'): 
             inputElement = <input 
-                className="InputElement" 
+                className= {inputClasses.join(' ')} 
                 {...props.elementConfig} 
                 value={props.value}
                 onChange={props.changed}
@@ -17,7 +24,7 @@ const input = (props) => {
 
         case ('textarea'):
             inputElement = <textarea 
-                className="InputElement" 
+                className={inputClasses.join(' ')} 
                 {...props.elementConfig} 
                 value={props.value}
                 onChange={props.changed}
@@ -27,7 +34,7 @@ const input = (props) => {
         case ( 'select'  ):
             inputElement = (
                 <select
-                    className="InputElement" 
+                    className={inputClasses.join(' ')} 
                     value={props.value}
                     onChange={props.changed}>
                     {/* value is a compulsory attr for elements */}
@@ -40,7 +47,7 @@ const input = (props) => {
 
         default:  // ALT + Clicks let's you writing same code on multiple lines
             inputElement = <input 
-                className="InputElement" 
+                className={inputClasses.join(' ')}  
                 {...props.elementConfig} 
                 value={props.value}
                 onChange={props.changed} 
@@ -51,6 +58,7 @@ const input = (props) => {
         <div className="Input">
             <label className="Label">{props.label}</label>
             { inputElement }
+            { validationError }
         </div>
     );
 };

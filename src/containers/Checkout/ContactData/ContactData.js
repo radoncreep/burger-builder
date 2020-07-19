@@ -14,7 +14,12 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Your name'
                 },
-            value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             street: {
                 elementType: 'input',
@@ -22,7 +27,12 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Your Street'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             zipCode: {
                 elementType: 'input',
@@ -30,7 +40,14 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'ZIP Code'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true,
+                    minLength: 5,
+                    maxLength: 5
+                },
+                valid: false,
+                touched: false
             },
             country: {
                 elementType: 'input',
@@ -38,7 +55,12 @@ class ContactData extends Component {
                     type: 'text',
                     placeholder: 'Country'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             email: {
                 elementType: 'input',
@@ -46,7 +68,12 @@ class ContactData extends Component {
                     type: 'email',
                     placeholder: 'Your email'
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
             },
             deliveryMethod:  {
                 elementType: 'select',
@@ -56,9 +83,16 @@ class ContactData extends Component {
                         {value: 'cheapest', displayValue: 'cheapest'}
                     ]
                 },
-                value: ''
-            },
-        }
+                value: '', // the value of the options at first will be an empty string and will only be updated once we trigger onChange i.e once we change the value once, 
+                // this will become an issue once we submit our form to the server, then we will actually submit an empty value in case we never switch the value
+                // all controls are now setup equal
+                // if the controls or property elements do not need validaton it should just be empty
+                validation: {}, // accessing the validaton poperty as an arg "rules" in the checkValidity method will not  fail but return undefined
+                valid: true
+            }
+        },
+        formIsValid: false,
+        loading: false
     }
 
     orderHandler = (event) => {
@@ -92,19 +126,55 @@ class ContactData extends Component {
         );
     }
 
+    checkValidity(value, rules) { // validation obj property from each property is being passed into rules, which makes rules an object
+        let isValid = true;
+
+        if (!rules) { // another approach
+            return true; // always return true for this method if no validaton rules are defined
+        };
+
+        if (rules.required) { //
+            isValid = value.trim() !== '' && isValid; // if its an empty string it will be false and if theres an actual value then it will return true because an empty value is not equal to an empty string and that's true
+        };
+
+        // adding more rules
+        if (rules.minLength) {
+            isValid = value.length >= rules.minLength && isValid;
+        };
+
+        if (rules.maxLength) {
+            isValid = value.length <= rules.maxLength && isValid;
+        }
+
+        return isValid;
+    };
+
     inputChangedHandler = (event, inputIdentifier) => { // Two way binding
         // console.log(event.target.value);
+        // the inputIdentifier is the formElement passed as an arg here
+        // it cld be the name, street, zip code... obj property
         const updatedOrderForm = { // cloning the order form object
             ...this.state.orderForm
         };
+
         const updateFormElement = { // referencing the properties of the order form clone
-            ...updatedOrderForm[inputIdentifier]
+            ...updatedOrderForm[inputIdentifier] // if the inputIdentifier is the name porperty from orderForm clone then the properties of name is going to be spread into this obj
         };
 
         updateFormElement.value = event.target.value; // not [value] but .value first one is assigning a value to the value of property while the second is assiging a value to the property or key
+        updateFormElement.valid = this.checkValidity(updateFormElement.value, updateFormElement.validation); // this method returns true or false
+        updateFormElement.touched = true; // when the element is clicked the event is fired off, so if a value has been inserted or deleted in the input it counts as being touched, so the value here is set to true
         updatedOrderForm[inputIdentifier] = updateFormElement // sp here youre assigning the cloned properties to the clone order form itself
-        this.setState({ orderForm: updatedOrderForm});
+        
+        let formValid = true
+
+        for (let inputIdentifier in updatedOrderForm) {
+            formValid = updatedOrderForm[inputIdentifier].valid && formValid;
+        };
+
+        this.setState({ orderForm: updatedOrderForm, formIsValid: formValid });
     };
+
 
     render() {
         let formElementsArray = [];
@@ -126,17 +196,21 @@ class ContactData extends Component {
                             elementType={formElement.config.elementType}
                             elementConfig={formElement.config.elementConfig}
                             value={formElement.config.value}
+                            invalid = {!formElement.config.valid}
+                            shouldValidate = {formElement.config.validation}
+                            touched = {formElement.config.touched}
                             changed={(event) => this.inputChangedHandler(event, formElement.id)}
                         />
                     )
                 })}
-                <Button btnType="Success" clicked={this.orderHandler}>ORDER</Button>
+                <Button btnType="Success" disabled={!this.state.formIsValid} clicked={this.orderHandler}>ORDER</Button>
             </form>
         );
 
         if (this.state.loading) {
             form = <Spinner />
-        }
+        };
+
         return (
             <div className="ContactData">
                 <h4>Enter your Contact Data</h4>
