@@ -1,33 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import axios from '../../axios-orders';
 
 import Auxillary from '../../hoc/Auxillary';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
-import axios from '../../axios-orders';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
-import * as actionTypes from '../../store/actions';
+import * as burgerBuilderActions from '../../store/actions/index';
 
 class BurgerBuilder extends Component {
     state = {
         purchasing: false,
-        loading: false,
-        error: false
     }
 
     componentDidMount () {
         console.log(this.props)
-        axios.get('https://burger-builder-f819b.firebaseio.com/ingredients.json')
-            .then(response => {
-                console.log(response.data);
-                this.setState({ ingredients: response.data })
-            }).catch(err => {
-                this.setState({ error: true})
-            });
     }
+
     updatePurchasable (ingredients) {
         const sum = Object.keys(ingredients)
             .map(igkey => {
@@ -97,9 +89,9 @@ class BurgerBuilder extends Component {
             />
         };
 
-        if (this.state.loading) {
-            orderSummary = <Spinner />
-        };
+        // if (this.state.loading) {
+        //     orderSummary = <Spinner />
+        // };
        
         return (
             <Auxillary>
@@ -122,15 +114,22 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onIngredientsAdded: (ingName) => dispatch({ type: actionTypes.ADD_INGREDIENT, ingredientName: ingName }),
-        onIngredientsRemoved: (ingName) => dispatch({ type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName })
+        onIngredientsAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
+        onIngredientsRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName))
     };
 };
-
+ 
 
 export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));
 
 
+// the dispatch(has a function which returns an object)
+// the obj returned is the same with the type and payload 
+// the function from burger control passes a string or ingredient type
+// in which the function is run here as an anonymous function
+// and then the ing type is passed as an argument
+// this.props.onIngredientAdded is a property that has a function as a value
+// so that's it
 
 
 
