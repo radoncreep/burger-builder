@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
 import ContactData from './ContactData/ContactData';
 class Checkout extends Component {
 
-
+    // this method executes before the render call
+    // it sets the state property "purchased" to be false
+    // whenever the we reach the checkout page that proprty will be set to false
+   
     checkoutCancelledHandler = () => {
         this.props.history.goBack();
     }
@@ -15,27 +18,42 @@ class Checkout extends Component {
         this.props.history.replace('/checkout/contact-data');
     }
     render() {
-        return (
-            <div>
-                <CheckoutSummary 
+        let summary = <Redirect to="/"/>
+        if (this.props.ings) {
+            // when rendered and purchase_success is executed the "purchased" property in the state is set to true
+            const purchasedRedirect = this.props.purchased ? <Redirect to="/"/> : null;
+            // console.log(this.props.purchased)
+
+            summary = (
+                <div>
+                    {purchasedRedirect}
+                    <CheckoutSummary 
                     ingredients={this.props.ings}
                     checkoutCancelled={this.checkoutCancelledHandler}
-                    checkoutContinued={this.checkoutContinuedHandler}/>
-
-            <Route 
-                path={this.props.match.path + '/contact-data'} 
-                component={ContactData}
-            />
-            </div>
-        )
+                    checkoutContinued={this.checkoutContinuedHandler}
+                />
+                <Route 
+                    path={this.props.match.path + '/contact-data'} 
+                    component={ContactData} /> 
+                </div>
+            )
+        }
+        return summary;
     }
 };
 
 const mapStateToProps = state => {
     return {
-        ings: state.ingredients
+        ings: state.burgerBuilder.ingredients,
+        purchased: state.order.purchased
     };
 };
+
+// const mapDispatchToProps = dispatch => {
+//     return {
+//         onInitPurchase: () => dispatch(actions.purchaseInit())
+//     };
+// };
 
 // We are not dispatching here
 

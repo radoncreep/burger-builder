@@ -6,6 +6,8 @@ import './ContactData.css'
 import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+import * as actions from '../../../store/actions/index';
 class ContactData extends Component {
     state = {
         orderForm: {
@@ -84,7 +86,7 @@ class ContactData extends Component {
                         {value: 'cheapest', displayValue: 'cheapest'}
                     ]
                 },
-                value: '', // the value of the options at first will be an empty string and will only be updated once we trigger onChange i.e once we change the value once, 
+                value: 'fastest', // the value of the options at first will be an empty string and will only be updated once we trigger onChange i.e once we change the value once, 
                 // this will become an issue once we submit our form to the server, then we will actually submit an empty value in case we never switch the value
                 // all controls are now setup equal
                 // if the controls or property elements do not need validaton it should just be empty
@@ -93,7 +95,6 @@ class ContactData extends Component {
             }
         },
         formIsValid: false,
-        loading: false
     }
 
     orderHandler = (event) => {
@@ -106,25 +107,13 @@ class ContactData extends Component {
             formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
         }
         // alert('You continue to the next step!');
-        const orders = {
+        const orders = { // from the form on the order page and the burger ingredient for order
             ingredients: this.props.ings,
             price: this.props.price, // this should be recalculated in the server in a real application
             orderData: formData
         };
 
-        // the syntax for sending a req to firebase is the name of the node with .json as its extension
-        axios.post('/orders.json', orders)
-            .then(response => {
-                // console.log(response)
-                this.setState({ loading: false });
-                this.props.history.push('/'); // getting history through props on the routing componeent
-                // but because of the way this component is rendered thru the render method it wont recieve history as props so we have to pass it
-                
-            }).catch(error => {
-                this.setState({ loading: false });
-                console.log(error);
-            }
-        );
+        this.props.onOrderBurger(orders)
     }
 
     checkValidity(value, rules) { // validation obj property from each property is being passed into rules, which makes rules an object
@@ -208,7 +197,7 @@ class ContactData extends Component {
             </form>
         );
 
-        if (this.state.loading) {
+        if (this.props.loading) {
             form = <Spinner />
         };
 
@@ -223,9 +212,32 @@ class ContactData extends Component {
 
 const mapStateToProps = state => {
     return {
-        ings: state.ingredients,
-        price: state.totalPrice
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        loading: state.order.loading // getting this prop from the state
     };
 };
 
-export default connect(mapStateToProps)(ContactData);
+const mapDispatchToProps = dispatch => {
+    return { // returning a map to functions
+        onOrderBurger: (orderData) => dispatch( actions.purchaseBurger(orderData))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, axios)); // handling error with axios instance in wothErrorHandler
+
+// BEFORE REDUX
+
+// the syntax for sending a req to firebase is the name of the node with .json as its extension
+// axios.post('/orders.json', orders)
+//     .then(response => {
+//         // console.log(response)
+//         this.setState({ loading: false });
+//         this.props.history.push('/'); // getting history through props on the routing componeent
+//         // but because of the way this component is rendered thru the render method it wont recieve history as props so we have to pass it
+        
+//     }).catch(error => {
+//         this.setState({ loading: false });
+//         console.log(error);
+//     }
+// );
