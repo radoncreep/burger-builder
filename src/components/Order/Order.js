@@ -7,8 +7,8 @@ const order = (props) => {
 
     for (let ingredientName in props.ingredients) {
         ingredients.push({ // we are not just getting the name of the ig e.g 'salad', we want each ig name and its amount, so we group them into an obj push in to the new constant
-            name: ingredientName,
-            amount: props.ingredients[ingredientName]
+            name: ingredientName, // getting the ingredient name 
+            amount: props.ingredients[ingredientName] // getting the value of that ingredient name
         });
     }; // [ {name: 'salad', amount: 2}, {name: 'bacon', amount: 1} ]
 

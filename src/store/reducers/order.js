@@ -43,13 +43,13 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 orders: action.orders,
-                loading: false
+                loading: false 
             }
         case actionTypes.FETCH_INGREDIENTS_FAILED:
             return {
                 ...state,
                 loading: false,
-                error: action.error
+                // error: action.error
             }
         default:
             return state;

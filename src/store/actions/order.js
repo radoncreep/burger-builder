@@ -95,8 +95,9 @@ export const fetchOrders = () => {
                         id: key
                     })
                 };
+                console.log(fetchedOrders)
                 // dispatching a function that will take in the orders we got from the db
-                dispatch(fetchOrdersStart(fetchedOrders)); // these returns an obj from fetchedOrderStart as an action to be dispatched
+                dispatch(fetchOrdersSuccess(fetchedOrders)); // these returns an obj from fetchedOrderStart as an action to be dispatched
             }).catch(error => {
                 dispatch(fetchOrdersFail(error)) // passing the error gotten from the db
                 // this.setState({ loading: false }); // if there's an error you don't wont it to keep loading
