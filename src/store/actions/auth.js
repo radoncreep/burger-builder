@@ -64,10 +64,10 @@ export const auth = (email, password, isSignup) => {
             returnSecureToken: true
         };
 
-        let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDfXA41ksEbBpm0IuBWwMEU3HZaXfDJxv8';
+        let url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=#################';
 
         if (!isSignup) { // if the isSignup property is false in the updated state then use the login url from firebase
-            url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDfXA41ksEbBpm0IuBWwMEU3HZaXfDJxv8'
+            url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=#################'
         };
 
         axios.post(url, authData)
