@@ -110,10 +110,11 @@ class ContactData extends Component {
         const orders = { // from the form on the order page and the burger ingredient for order
             ingredients: this.props.ings,
             price: this.props.price, // this should be recalculated in the server in a real application
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         };
 
-        this.props.onOrderBurger(orders)
+        this.props.onOrderBurger(orders, this.props.token);
     }
 
     checkValidity(value, rules) { // validation obj property from each property is being passed into rules, which makes rules an object
@@ -214,13 +215,15 @@ const mapStateToProps = state => {
     return {
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
-        loading: state.order.loading // getting this prop from the state
+        loading: state.order.loading, // getting this prop from the state
+        token: state.auth.token,
+        userId: state.auth.userId
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return { // returning a map to functions
-        onOrderBurger: (orderData) => dispatch( actions.purchaseBurger(orderData))
+        onOrderBurger: (orderData, token) => dispatch( actions.purchaseBurger(orderData, token))
     };
 };
 

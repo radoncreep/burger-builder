@@ -6,9 +6,15 @@ const navigationItems = (props) => {
     return (
         <ul className="NavigationItems">
            <NavigationItem link="/" exact>BurgerBuilder</NavigationItem>
-           <NavigationItem link="/orders" >Orders</NavigationItem>
+           {props.isAuthenticated // this is false bcos we havent authenticated so it wont show on anything the nav
+                ? <NavigationItem link="/orders" >Orders</NavigationItem>
+                : null}
+           {!props.isAuthenticated 
+                ? <NavigationItem link="/auth" >Authenticate</NavigationItem>
+                : <NavigationItem link="/logout">Logout</NavigationItem>
+            }
         </ul>
-    )
+    ) 
 };
 
 export default navigationItems;

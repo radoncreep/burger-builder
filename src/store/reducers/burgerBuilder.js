@@ -3,7 +3,8 @@ import * as actionTypes from '../actions/actionTypes';
 const initialState = {
     ingredients: null,
     totalPrice: 4,
-    error: false
+    error: false,
+    building: false
 };
 
 
@@ -21,9 +22,10 @@ const reducer  = (state = initialState, action) => {
                 ...state,
                 ingredients: {
                     ...state.ingredients,
-                    [action.ingredientName]: state.ingredients[action.ingredientName] + 1
+                    [action.ingredientName]: state.ingredients[action.ingredientName] + 1,
                 },
-                totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName]
+                totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName],
+                building: true
             };
         case actionTypes.REMOVE_INGREDIENT:
             return {
@@ -32,7 +34,8 @@ const reducer  = (state = initialState, action) => {
                     ...state.ingredients,
                     [action.ingredientName]: state.ingredients[action.ingredientName] - 1
                 },
-                totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName]
+                totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName],
+                building: true
             };
         case actionTypes.SETINGREDIENTS:
             return {
@@ -44,7 +47,8 @@ const reducer  = (state = initialState, action) => {
                     meat: action.ingredients.meat // here these are just values that is why there is no need to clone them
                 },
                 totalPrice: 4, // updates the price to the initial price after every purchase
-                error: false
+                error: false,
+                building: false
             }
         case actionTypes.FETCH_INGREDIENTS_FAILED:
             return {

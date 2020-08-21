@@ -6,11 +6,11 @@ import Button from '../../UI/Button/Button';
 
 class OrderSummary extends Component {
 
-    componentWillUpdate() { // Using hooks to optimize rendering
-        // Order summary was logging if tho it was just an ig that was added and not the order summary being shown
-        // So it won't make alot of sense to have it rendered/Updated if it is not being shown
-        console.log('[OrderSummary] WillUpdate');
-    }
+    // componentWillUpdate() { // Using hooks to optimize rendering
+    //     // Order summary was logging if tho it was just an ig that was added and not the order summary being shown
+    //     // So it won't make alot of sense to have it rendered/Updated if it is not being shown
+    //     console.log('[OrderSummary] WillUpdate');
+    // }
     render() {        
         const ingredientSummary = Object.keys(this.props.ingredients)
         .map((igKey, index) => {

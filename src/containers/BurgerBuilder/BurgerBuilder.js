@@ -38,7 +38,14 @@ class BurgerBuilder extends Component {
 
   
     purchaseHandler = () =>  {
-        this.setState({ purchasing: true });
+        if (this.props.isAuthenticated) {
+            this.setState({ purchasing: true });
+        } else {
+            // if isAuthenticated is set to null and the user was building a burger the authRedirect of the state is set to checkout after that the next line executes
+            this.props.onSetAuthRedirectPath('/checkout');
+            // this will push to the authentication page bcos the isAuthenticated is null
+            this.props.history.push('/auth');
+        };
     };
 
     purchaseRemoveHandler = () => {
@@ -50,11 +57,12 @@ class BurgerBuilder extends Component {
     };
 
     purchaseContinueHandler = () => {
-        // the pruchase proerty has to be reinitialized to be false when we click the continue button after the ordering with the order now btn
+        // the purchase proerty has to be reinitialized to be false when we click the continue button after the ordering with the order now btn
         // that is when this method is ran the "purchased" property of the state has to be set to false before routing or going to the checkout page
         // to avoid being redirected
         this.props.onInitPurchase();
         this.props.history.push('/checkout'); 
+
     };
 
     render () {
@@ -82,6 +90,7 @@ class BurgerBuilder extends Component {
                         disabled={disabledInfo}
                         purchasable={this.updatePurchasable(this.props.ings)}
                         price={this.props.price}
+                        isAuth={this.props.isAuthenticated}
                         ordered={this.purchaseHandler}
                     />
                 </Auxillary>
@@ -115,7 +124,8 @@ const mapStateToProps = state => {
     return {
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
-        error: state.burgerBuilder.error
+        error: state.burgerBuilder.error,
+        isAuthenticated: state.auth.token !== null
     };
 };
 
@@ -124,7 +134,8 @@ const mapDispatchToProps = dispatch => {
         onIngredientsAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
         onIngredientsRemoved: (ingName) => dispatch(actions.removeIngredient(ingName)),
         onInitIngredients: () => dispatch(actions.initIngredients()),
-        onInitPurchase: () => dispatch(actions.purchaseInit())
+        onInitPurchase: () => dispatch(actions.purchaseInit()),
+        onSetAuthRedirectPath: (path) =>dispatch(actions.setAuthRedirectPath(path))
     };
 };
  

@@ -5,6 +5,7 @@
 import * as actionTypes from './actionTypes';
 
 import axios from '../../axios-orders';
+// import { useImperativeHandle } from 'react';
 
 // requesting and receiving the order made or submitted to the firebase server
 export const purchaseBurgerSuccess = (id, orderData) => {
@@ -31,14 +32,14 @@ export const purchaseBurgerStart = () => {
 // the action we dispatch from the container once we click the order now btn
 // then we connnect this to the contactData container
 // this has our async code and therefore doesn't return an action
-export const purchaseBurger = (orderData) => {
+export const purchaseBurger = (orderData, token) => {
     // we are able to use the dispatch func here bcos of the redux thunk middleware
     return dispatch => {
         // executing it w the dispatch function so that the action returned by purchaseBurgerStart is dispatched to the store
         dispatch(purchaseBurgerStart());
-        axios.post( '/orders.json', orderData ) // so post to this "orders.json" collection the orderData
+        axios.post( '/orders.json?auth=' + token, orderData ) // so post to this "orders.json" collection the orderData
             .then( response => {
-                console.log(response.data.name); // how we can get the id, after checking what we got back from the server the name is the property holding the id
+                // console.log(response.data.name); // how we can get the id, after checking what we got back from the server the name is the property holding the id
                 // the use of dispatch here is to dispatch the object we get back from the purchaseBurgerSuccess
                 // so first the data from the client is passed from the contactData container to here 
                 // after the post req is made the rsponse and orderData is passed to purchaseBurgerSuccess which is called here
@@ -79,12 +80,15 @@ export const fetchOrdersFail = (error) => {
     };
 };
 
-export const fetchOrders = () => {
+export const fetchOrders = (token, userId) => {
+    // You could use getState as and arg "(dispatch, getState)" to get the token here as an alternative from passing it from the container
     // dispatch function available to here throuh the composer in the index.js file
     return dispatch => { //you're not returning an object, this is a function
+    const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"';
     // on req before we get the orders, loading should be set to true to load the spinner
         dispatch(fetchOrdersStart())
-        axios.get('/orders.json')
+        console.log(token)
+        axios.get('/orders.json' + queryParams)
             .then(res => {
                 // console.log(res.data)
                 const fetchedOrders = [];
